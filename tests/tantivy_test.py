@@ -7,6 +7,7 @@ from tantivy import Document, Index, SchemaBuilder, SnippetGenerator
 def schema():
     return SchemaBuilder().add_text_field("title", stored=True).add_text_field("body").build()
 
+
 def create_index(dir=None):
     # assume all tests will use the same documents for now
     # other methods may set up function-local indexes
@@ -99,7 +100,8 @@ class TestClass(object):
 
     def test_and_query(self, ram_index):
         index = ram_index
-        query = index.parse_query("title:men AND body:summer", default_field_names=["title", "body"])
+        query = index.parse_query(
+            "title:men AND body:summer", default_field_names=["title", "body"])
         # look for an intersection of documents
         searcher = index.searcher()
         result = searcher.search(query, 10)
@@ -114,7 +116,7 @@ class TestClass(object):
 
     def test_and_query_parser_default_fields(self, ram_index):
         query = ram_index.parse_query("winter", default_field_names=["title"])
-        assert repr(query) == """Query(TermQuery(Term(field=0,bytes=[119, 105, 110, 116, 101, 114])))"""
+        assert repr(query) == """Query(TermQuery(Term(field=0,bytes=[119, 105, 110, 116, 101, 114])))"""  # noqa
 
     def test_and_query_parser_default_fields_undefined(self, ram_index):
         query = ram_index.parse_query("winter")
@@ -132,7 +134,8 @@ class TestClass(object):
             index.parse_query("bod:men", ["title", "body"])
 
     def test_order_by_search(self):
-        schema = (SchemaBuilder()
+        schema = (
+            SchemaBuilder()
             .add_unsigned_field("order", fast="single")
             .add_text_field("title", stored=True).build()
         )
@@ -155,23 +158,17 @@ class TestClass(object):
         doc.add_unsigned("order", 1)
         doc.add_text("title", "Another test title")
 
-
         writer.add_document(doc)
-
         writer.commit()
         index.reload()
 
         query = index.parse_query("test")
 
-
         searcher = index.searcher()
-
         result = searcher.search(query, 10, offset=2, order_by_field="order")
-
         assert len(result.hits) == 1
 
         result = searcher.search(query, 10, order_by_field="order")
-
         assert len(result.hits) == 3
 
         _, doc_address = result.hits[0]
@@ -187,7 +184,8 @@ class TestClass(object):
         assert searched_doc["title"] == ["Test title"]
 
     def test_order_by_search_without_fast_field(self):
-        schema = (SchemaBuilder()
+        schema = (
+            SchemaBuilder()
             .add_unsigned_field("order")
             .add_text_field("title", stored=True).build()
         )
@@ -199,11 +197,15 @@ class TestClass(object):
         doc.add_unsigned("order", 0)
         doc.add_text("title", "Test title")
 
+        writer.add_document(doc)
+        writer.commit()
+        index.reload()
+
         query = index.parse_query("test")
 
         searcher = index.searcher()
-        result = searcher.search(query, 10, order_by_field="order")
-        assert len(result.hits) == 0
+        with pytest.raises(ValueError):
+            searcher.search(query, 10, order_by_field="order")
 
 
 class TestUpdateClass(object):
@@ -239,7 +241,7 @@ class TestFromDiskClass(object):
 
     def test_opens_from_dir_invalid_schema(self):
         with pytest.raises(ValueError):
-            index = Index(schema(), PATH_TO_INDEX, reuse=True)
+            Index(schema(), PATH_TO_INDEX, reuse=True)
 
     def test_opens_from_dir(self, dir_index):
         index_dir, _ = dir_index
