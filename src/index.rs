@@ -281,7 +281,8 @@ impl Index {
     #[staticmethod]
     fn exists(path: &str) -> PyResult<bool> {
         let directory = MmapDirectory::open(path).map_err(to_pyerr)?;
-        Ok(tv::Index::exists(&directory).unwrap())
+        let exists = tv::Index::exists(&directory).map_err(to_pyerr)?;
+        Ok(exists)
     }
 
     /// The schema of the current index.

@@ -1,3 +1,4 @@
+use crate::to_pyerr;
 use pyo3::{basic::PyObjectProtocol, prelude::*, types::PyType};
 use tantivy::schema;
 
@@ -46,10 +47,9 @@ impl Facet {
     ///
     /// Returns the created Facet.
     #[classmethod]
-    fn from_string(_cls: &PyType, facet_string: &str) -> Facet {
-        Facet {
-            inner: schema::Facet::from(facet_string),
-        }
+    fn from_string(_cls: &PyType, facet_string: &str) -> PyResult<Facet> {
+        let inner = schema::Facet::from_text(facet_string).map_err(to_pyerr)?;
+        Ok(Facet { inner: inner })
     }
 
     /// Returns the list of `segments` that forms a facet path.
