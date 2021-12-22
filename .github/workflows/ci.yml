@@ -1,6 +1,5 @@
-on: [push]
-
 name: CI
+on: [push]
 
 jobs:
   Lint:
@@ -14,12 +13,14 @@ jobs:
         with:
           toolchain: stable
           components: rustfmt
-      - run: pip install flake8
+      - run: pip install flake8 black
       - name: Check Formatting
         run: rustfmt --check src/*rs
       - name: Flake8
         run: flake8 tests
-  
+      - name: Black
+        run: black --check tests
+
   Test:
     runs-on: ubuntu-latest
     steps:
@@ -30,7 +31,6 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          components: rustfmt
       - run: pip install pipenv
       - run: pipenv install --dev
       - run: pipenv run maturin develop
