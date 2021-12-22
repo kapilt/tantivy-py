@@ -123,7 +123,8 @@ class TestClass(object):
     def test_and_query_parser_default_fields(self, ram_index):
         query = ram_index.parse_query("winter", default_field_names=["title"])
         assert repr(query) == (
-            """Query(TermQuery(Term(field=0,bytes=[119, 105, 110, 116, 101, 114])))""")
+            """Query(TermQuery(Term(field=0,bytes=[119, 105, 110, 116, 101, 114])))"""
+        )
 
     def test_and_query_parser_default_fields_undefined(self, ram_index):
         query = ram_index.parse_query("winter")
