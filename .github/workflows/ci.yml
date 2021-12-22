@@ -1,0 +1,27 @@
+on: [push]
+
+name: CI
+
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Formatting
+        run: cargo fmt --all -- --check
+  
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+	  python-version: '3.10'       
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+	  components: rustfmt
+      - run: pip install pipenv
+      - run: pipenv install
+      - run: pipenv run maturin develop
+      - run: pipenv pytest -v tests
+
