@@ -11,7 +11,7 @@ jobs:
           toolchain: stable
           components: rustfmt
       - name: Check Formatting
-        run: rustfmt --check src/*rs
+        run: ls -al
   
   Test:
     runs-on: ubuntu-latest
@@ -27,5 +27,5 @@ jobs:
       - run: pip install pipenv
       - run: pipenv install --dev
       - run: pipenv run maturin develop
-      - run: pipenv pytest -v tests
+      - run: pipenv run pytest -v tests
 
