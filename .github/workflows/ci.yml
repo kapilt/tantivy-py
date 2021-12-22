@@ -6,8 +6,12 @@ jobs:
   Lint:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt
       - name: Check Formatting
-        run: cargo fmt --all -- --check
+        run: rustfmt --check src/*rs
   
   Test:
     runs-on: ubuntu-latest
@@ -21,7 +25,7 @@ jobs:
           toolchain: stable
           components: rustfmt
       - run: pip install pipenv
-      - run: pipenv install
+      - run: pipenv install --dev
       - run: pipenv run maturin develop
       - run: pipenv pytest -v tests
 
