@@ -6,12 +6,13 @@ jobs:
   Lint:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           components: rustfmt
       - name: Check Formatting
-        run: ls -al
+        run: rustfmt --check src/*rs
   
   Test:
     runs-on: ubuntu-latest
